@@ -1,6 +1,128 @@
 \documentclass[11pt]{book}
 
-\usepackage{amssymb}
+% \usepackage{amssymb}
+% \documentclass[12pt,a4paper]{article}
+% % \usepackage[subpreambles=true]{standalone}
+% \usepackage[a4paper]{geometry}
+% \usepackage[utf8]{inputenc}
+% \usepackage[T1]{fontenc}
+% \usepackage[light]{CormorantGaramond}
+% \usepackage{import}
+%
+% \linespread{1.25}
+
+\usepackage{amsmath, amssymb, amsfonts, amsthm, mathtools}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\argmin}{\arg\!\min} % AlfC
+\DeclareMathOperator{\tr}{tr}
+\newcommand{\irchi}[2]{\raisebox{\depth}{$#1\chi$}}
+\newcommand{\rchi}{{\mathpalette\irchi\relax}}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{float}
+
+\usepackage{microtype} %improves the spacing between words and letters
+
+\usepackage{lipsum}
+\usepackage{threeparttable}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{booktabs}
+\newcommand{\tabitem}{~~\llap{\textbullet}~~}
+\usepackage{graphicx}
+\graphicspath{ {./pics/} {./eps/}}
+\usepackage{epsfig}
+\usepackage{epstopdf}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% COLOR DEFINITIONS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[dvipsnames]{xcolor} % Enabling mixing colors and color's call by 'svgnames'
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\definecolor{MyColor1}{rgb}{0.2,0.4,0.6} %mix personal color
+\definecolor{MyColor2}{HTML}{A30073}
+\definecolor{MyColor3}{HTML}{A3008F}
+\newcommand{\textb}{\color{Black} \usefont{OT1}{lmss}{m}{n}}
+\newcommand{\blue}{\color{MyColor1} \usefont{OT1}{lmss}{m}{n}}
+\newcommand{\blueb}{\color{MyColor1} \usefont{OT1}{lmss}{b}{n}}
+\newcommand{\red}{\color{LightCoral} \usefont{OT1}{lmss}{m}{n}}
+\newcommand{\green}{\color{Turquoise} \usefont{OT1}{lmss}{m}{n}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% FONTS AND COLORS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%    SECTIONS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{titlesec}
+\usepackage{sectsty}
+%%%%%%%%%%%%%%%%%%%%%%%%
+%set section/subsections HEADINGS font and color
+\newcommand*{\myfont}{\fontfamily{cmr}\selectfont}
+\chapterfont{\myfont \color{MyColor1}}
+\sectionfont{\myfont \color{MyColor1}}
+\subsectionfont{\myfont\color{MyColor1}}  % sets colour of sections
+
+%set section enumerator to arabic number (see footnotes markings alternatives)
+% \renewcommand\thechapter{\arabic{chapter}.} %define chapters numbering
+% \renewcommand\thesection{\arabic{section}.} %define sections numbering
+% \renewcommand\thesubsection{\thesection\arabic{subsection}} %subsec.num.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%		CAPTIONS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{caption}
+\usepackage{subcaption}
+%%%%%%%%%%%%%%%%%%%%%%%%
+\graphicspath{{./figures/}} %Setting the graphicspath
+% \graphicspath{{./figures/G&D/}} %Setting the graphicspath
+% \captionsetup[figure]{labelfont={color=Turquoise}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%		!!!EQUATION (ARRAY) --> USING ALIGN INSTEAD
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%using amsmath package to redefine eq. numeration (1.1, 1.2, ...)
+%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\theequation}{\thesection\arabic{equation}}
+
+%set box background to grey in align environment
+\usepackage{etoolbox}% http://ctan.org/pkg/etoolbox
+\makeatletter
+\patchcmd{\@Aboxed}{\boxed{#1#2}}{\colorbox{black!15}{$#1#2$}}{}{}%
+\patchcmd{\@boxed}{\boxed{#1#2}}{\colorbox{black!15}{$#1#2$}}{}{}%
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\makeatletter
+\let\reftagform@=\tagform@
+\def\tagform@#1{\maketag@@@{(\ignorespaces\textcolor{red}{#1}\unskip\@@italiccorr)}}
+\renewcommand{\eqref}[1]{\textup{\reftagform@{\ref{#1}}}}
+\makeatother
+\usepackage{hyperref}
+\hypersetup{colorlinks = true, linkcolor  = black}
+
+%% LISTS CONFIGURATION %%
+\usepackage{enumitem}
+\setlist[enumerate,1]{start=1}
+\renewcommand{\labelenumii}{\theenumii}
+\renewcommand{\theenumii}{\theenumi.\arabic{enumii}.}
+\newcommand{\cri}[1]{\textcolor{MyColor2}{\textbf{(Cri says: #1)}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% abbreviations:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[acronym]{glossaries}
+\newacronym{pca}{PCA}{Principal Component Analysis}
+\newacronym{mimo}{MIMO}{Multiple-input Multiple-output}
+\newacronym{bs}{BS}{Base Station}
+\newacronym{ut}{UT}{User Terminal}
+\newacronym{csi}{CSI}{Channel State Information}
+\newacronym{iot}{IoT}{Internet if Things}
+\newacronym{m2m}{M2M}{Machine to Machine}
+\newacronym{3gpp}{3GPP}{3rd Generation Partnership Program}
+\newacronym{fdd}{FDD}{Frequency Division Duplex}
+\newacronym{tdd}{TDD}{Time Division Duplex}
 
 \makeatletter
 \newcommand{\chapterauthor}[1]{%
@@ -13,33 +135,74 @@
 
 
 \begin{document}
-\chapter{Title of the Essay}
-\chapterauthor{Author Name (S. Tomasin)}
+\chapter{The Pilot Contamination problem}
+\chapterauthor{Author Name (Cristina Gava)\\
+Student ID 1155449}
 
+\section{Overview}
+Compared to existing cellular network infrastructures, nowadays there is an increasing need for technologies providing higher capacity. This comes from an always bigger demand for higher data rates in wireless mobile communication systems such as \gls{iot}, \gls{m2m} communication and other electronic services.
 
-\section{Introduction}
+The current 4G cellular networks, \gls{3gpp} above all, were designed with the intention to support a peak spectral efficiency of $15$ bps/Hz, a bandwidth of $100$ MHz and an ultra-low latency \cite{Elijah2016}. Nonetheless, the estimated future traffic far exceeds the resources of the current 4G and so the need for 5G cellular networks.
+
+One of the novelties of the 5G protocol which is beeing designed and refined in the present communication scenario is the \gls{mimo} system, a technology that focuses on the idea of implementing multiple antennas terminals in one device - or \gls{bs} - in order to enhance the quality and reliabilty of communication. Without going into details, one of the options for this system is the multiuser \gls{mimo} system, where and array of antennas serves a group of autonomous terminals at the same time. These terminals may be single-antenna cheap devices and the multiplexing throughput gains are shared among the \gls{ut}s \cite{Marzetta2010}.
+
+In this type of system, the \gls{csi} has a crucial role, since forward-link data transmission needs that the base station know the forward channel, as well as the reverse-link data transmission require it to know the reverse channel. This is the reason why such things as pilot signals exist, but with them some problems might arise due to the contamination of such signals. What we mean to takle in this chapter is exactly to have a detailed look at those kind of problems, referred to as pilot contamination, and at a couple of main approaches to solve them.
+
+\section{The pilot contamination problem}
+In several works multi-user \gls{mimo} operations with a big excess of base station antennas are considered: in them the channel is estimated exploiting the feedback or channel reciprocity schemes through multiplexing over frequency - \gls{fdd} - or over time - \gls{tdd}. In \gls{tdd} a time-slot, over which the channel can be thought as constant, is divided between reverse-link pilots and forward-link data transmission. The pilots assume reciprocity to provide the \gls{bs} with an estimate of the forward channel, which in turn generates a linear pre-coder for data transmission \cite{Marzetta2010}. In the \gls{fdd} scenario, the division is made over the frequency and the system requires not only the estimation, but also feedbacks for both forward and reverse direction between the \gls{bs} and the \gls{ut}.
+
+For this reason \gls{tdd} is considered a more suitable approach the \gls{fdd} when it comes to acquiring \gls{csi} in wireless systems \cite{Elijah2016} and following this line, we will focus on this system.
+
+In \gls{tdd} the time pilots require is proportional to the number of terminals served, while the number of base station antennas does not influence it. At the same time, though, the number of terminals that can be served is limited by the coherence time. One of the principal findings in this sense, is that the addition of \gls{bs} antennas always brings benefits to the SNR situation.
+
+To simplify the observed scenario, several works focus on multi-user \gls{mimo} operations with an infinite number of base station antennas in a multicellular environment. In this frame, orthogonal pilots would need length of at least $K \times L$ symbols (with $K = $ overall number of \gls{ut}s in a cell and $L = $ total number of cells in a system) due to frequency reuse factor of one, so non-orthogonal pilots across neighboring cells are used. At the same time, the use of $K \times L$ pilots is not feasible beacuse of short channel coherence times due to \gls{ut}s mobility \cite{Elijah2016}. Because of it, the problem of pilot contamination arises and it has been considered one of the main impirments in massive \gls{mimo} systems.
+
+\subsection{UL training}
+The use of pilot in the \gls{tdd} scheme is related to the Uplink segment training. Considering the worst-case scenarion in this means assuming that all \gls{ut}s transmit synchronous pilot sequences of length $\tau$ symbols at the beginning of every coherence interval. Every cell then transmits a $\tau \times K$ orthogonal matrix $\textbf{S}_j = (\textbf{s}_{j1},\dots,\textbf{s}_{jk})$ which satisfies $\textbf{S}_j^T\textbf{S}_j = \tau \textbf{I}$. The received signal matrix at the $l_{th}$ \gls{bs} is then:
+\begin{equation}
+\textbf{Y}_l = \sqrt{p_u}\sum_{j=1}^{L}\textbf{D}_{l,j}^{1/2}\textbf{H}_{l,j}\textbf{S}_j^T + \textbf{N}_l
+\end{equation}
+with:
+\begin{itemize}
+  \item $\textbf{N}_l = $ the $M \times \tau$ additive noise matrix whose elements are are i.i.d. zero mean, circularly-symmetric complex gaussian $\mathbb{CN}(0,1)$ random variables;\\
+  \item $p_u = $ the average transmit power at each user on the uplink;\\
+  \item
+  \begin{equation}
+    \textbf{D}_{l,j} =
+    \begin{bmatrix}
+      \beta_{l,1,j} &        &              \\
+                    & \ddots &              \\
+                    &        & \beta_{l,K,j}\\
+    \end{bmatrix}
+  \end{equation}
+  with $\beta_{l,k,j}$ being the large scale fading coefficient;\\
+  \item
+  \begin{equation}
+    \textbf{H}_{l,j} =
+    \begin{bmatrix}
+      h_{l,1,j,1} & \dots  & h_{l,k,j,1}\\
+      \vdots      & \ddots & \vdots\\
+      h_{l,1,j,M} & \dots & h_{l,k,j,M}\\
+    \end{bmatrix}
+  \end{equation}
+  with $h_{l,k,j,m}$ being the small scale fading factor whose variables are $\mathbb{CN}(0,1)$.\\
+\end{itemize}
+
+\cri{Cita paper marzetta e paper prof per i diversi tipi di contaminazione}
+\section{The connection with 5G protocol}
+\cri{Cita paper 5th e paper del prof}
+\section{The approaches}
+\cri{cita paper del prof}
+\section{Pilot reuse approach details}
+\cri{non ricordo paper}
+\section{Subspace estimation approach details}
+\cri{cita paper muller}
+\section{Conclusions}
+
 
 Example of use of bibliography  \cite{Marzetta2010}
 
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
 \bibliographystyle{ieeetr}
 \bibliography{myBib}
