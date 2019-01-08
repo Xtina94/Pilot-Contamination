@@ -161,11 +161,12 @@ To simplify the observed scenario, several works focus on multi-user \gls{mimo} 
 The use of pilot in the \gls{tdd} scheme is related to the Uplink segment training. Considering the worst-case scenarion in this means assuming that all \gls{ut}s transmit synchronous pilot sequences of length $\tau$ symbols at the beginning of every coherence interval. Every cell then transmits a $\tau \times K$ orthogonal matrix $\textbf{S}_j = (\textbf{s}_{j1},\dots,\textbf{s}_{jk})$ which satisfies $\textbf{S}_j^T\textbf{S}_j = \tau \textbf{I}$. The received signal matrix at the $l_{th}$ \gls{bs} is then:
 \begin{equation}
 \textbf{Y}_l = \sqrt{p_u}\sum_{j=1}^{L}\textbf{D}_{l,j}^{1/2}\textbf{H}_{l,j}\textbf{S}_j^T + \textbf{N}_l
+\label{eq:recSignal}
 \end{equation}
 with:
 \begin{itemize}
-  \item $\textbf{N}_l = $ the $M \times \tau$ additive noise matrix whose elements are are i.i.d. zero mean, circularly-symmetric complex gaussian $\mathbb{CN}(0,1)$ random variables;\\
-  \item $p_u = $ the average transmit power at each user on the uplink;\\
+  \item $\textbf{N}_l = $ the $M \times \tau$ additive noise matrix whose elements are are i.i.d. zero mean, circularly-symmetric complex gaussian $\mathcal{CN}(0,1)$ random variables;\\
+  \item $p_u = $ the average transmit power at each user on the uplink and is a measure of pilot signal-to-noise ratio;\\
   \item
   \begin{equation}
     \textbf{D}_{l,j} =
@@ -185,13 +186,34 @@ with:
       h_{l,1,j,M} & \dots & h_{l,k,j,M}\\
     \end{bmatrix}
   \end{equation}
-  with $h_{l,k,j,m}$ being the small scale fading factor whose variables are $\mathbb{CN}(0,1)$.\\
+  with $h_{l,k,j,m}$ being the small scale fading factor whose variables are $\mathcal{CN}(0,1)$.\\
 \end{itemize}
 
 \cri{Cita paper marzetta e paper prof per i diversi tipi di contaminazione}
 \section{The connection with 5G protocol}
 \cri{Cita paper 5th e paper del prof}
-\section{The approaches}
+\section{The main sources of contamination}
+Pilot conatmination can be related to two main causes: non-orthogonal pilot schemes and hardware impairments.
+While the first source is the most common and known one, the second source has been considered only recently and is still gaining consideration.
+
+\subsection{Non orthogonal pilot schemes}
+Normally, in a multi-cell system where the same frequency is shraed by L users, pilots are assumed mutually orthogonal and hence the intra-cell intereference is considered negligible. However, when frequency reuse comes into play, these signals are affected by this intereference, resulting in pilot contamination. In this case, the expression for the received signal is tha same as in \ref{eq:recSignal} \cite{Elijah2016}.
+
+The conclusion of inter-cell interference was reached already by Marzetta in \cite{Marzetta2010}, where he precisely excluded the other possible sources of intra-cell interference and shadow fading. The author starts from the already considered propagation model where the single-antenna terminals are randomly distributed over the cell and separated by hundreds of wavelengths. Under these assumptions, the propagation vectors between the base station and the different terminals would be uncorrelated, since for a sufficiently high number of elements in a base station array the typical angular spacing between any two terminals would be greater than the angular Rayleigh resolution of the array, resulting in asymptotically orthogonal propagation vectors for different terminals. In fact, it can be shown that the inner product between two propagation vectors of any two terminals has a standard deviation of $\sqrt{M}$ (with $M$ being the number of antennas at the \gls{bs}) and it can be related to the critical assumtpion that, as the number of base station antennas grows, this inner product grows at a lower rate that the inner products of propagation vectors with themselves.
+
+Under this assumption, the intra-cell intereference, the fast fading and the additive receiver noise effect disappear, laving the inter-cell interference as the only remaning hobstacle.
+
+In this context the author analiyses the transmission scenario where he considers:
+\begin{itemize}
+  \item Hexagonal cells;
+  \item OFDM modulation;
+  \item Unlimited number of antennas per \gls{bs};
+  \item Single antennas terminals;
+  \item \gls{tdd}.
+\end{itemize}
+In this context, the maximum number of terminals for which the \gls{bs} can learn the channel is limited by the time it takes to acquire the \gls{csi} from the moving terminals, specifically: $K_{max} = \tau N_{smooth}$ with $\tau$ the number of OFDM symbols and $N_{smooth}$ the time over which the channel response is constant. The implication is that in general pilots from different cells are non-orthogonal, unless, for $K$ pilots in the $l_{th}$ cell, $K\cdot L \leq \tau N_{smooth}$ is true. The main conclusion of this apporach is that the frequency reuse among cells makes this relation false, and so justifies the inter-cell interference as the main source of pilot contamination \cite{Marzetta2010}.
+\subsection{Hardware impairments}
+
 \cri{cita paper del prof}
 \section{Pilot reuse approach details}
 \cri{non ricordo paper}
