@@ -123,6 +123,9 @@
 \newacronym{3gpp}{3GPP}{3rd Generation Partnership Program}
 \newacronym{fdd}{FDD}{Frequency Division Duplex}
 \newacronym{tdd}{TDD}{Time Division Duplex}
+\newacronym{ce}{CE}{Channel Estimation}
+\newacronym{ul}{UL}{Uplink}
+\newacronym{sinr}{SINR}{Signal-to-Interference plus Noise Ratio}
 
 \makeatletter
 \newcommand{\chapterauthor}[1]{%
@@ -153,11 +156,13 @@ In several works multi-user \gls{mimo} operations with a big excess of base stat
 
 For this reason \gls{tdd} is considered a more suitable approach the \gls{fdd} when it comes to acquiring \gls{csi} in wireless systems \cite{Elijah2016} and following this line, we will focus on this system.
 
-In \gls{tdd} the time pilots require is proportional to the number of terminals served, while the number of base station antennas does not influence it. At the same time, though, the number of terminals that can be served is limited by the coherence time. One of the principal findings in this sense, is that the addition of \gls{bs} antennas always brings benefits to the SNR situation.
+In \gls{tdd} the time pilots require is proportional to the number of terminals served, while the number of base station antennas does not influence it. At the same time, though, the number of terminals that can be served is limited by the coherence time. One of the principal findings in this sense is that the addition of \gls{bs} antennas always brings benefits to the SNR situation.
 
-To simplify the observed scenario, several works focus on multi-user \gls{mimo} operations with an infinite number of base station antennas in a multicellular environment. In this frame, orthogonal pilots would need length of at least $K \times L$ symbols (with $K = $ overall number of \gls{ut}s in a cell and $L = $ total number of cells in a system) due to frequency reuse factor of one, so non-orthogonal pilots across neighboring cells are used. At the same time, the use of $K \times L$ pilots is not feasible beacuse of short channel coherence times due to \gls{ut}s mobility \cite{Elijah2016}. Because of it, the problem of pilot contamination arises and it has been considered one of the main impirments in massive \gls{mimo} systems.
+To simplify the observed scenario, several works focus on multi-user \gls{mimo} operations with an infinite number of base station antennas in a multicellular environment. In general, in a massive \gls{mimo} system, when the \gls{ut}s transmit their pilot sequences to the \gls{bs} in order to perform the channel estimation in the \gls{ul} training phase, every \gls{bs} not only learns the channel related to the intended \gls{ut}, but also fractions of the channels connected to other \gls{ut}s that happen to have pilots which are related to the ones used by the intended \gls{ut}. This behavior causes a saturation in the achieved \gls{sinr} both in the uplink and in the downlink segment \cite{Buzzi}.
 
-\subsection{UL training}
+% In this frame, orthogonal pilots would need length of at least $K \times L$ symbols (with $K = $ overall number of \gls{ut}s in a cell and $L = $ total number of cells in a system) due to frequency reuse factor of one, so non-orthogonal pilots across neighboring cells are used. At the same time, the use of $K \times L$ pilots is not feasible beacuse of short channel coherence times due to \gls{ut}s mobility \cite{Elijah2016}. Because of it, the problem of pilot contamination arises and it has been considered one of the main impirments in massive \gls{mimo} systems.
+
+\subsection{\gls{ul} training}
 The use of pilot in the \gls{tdd} scheme is related to the Uplink segment training. Considering the worst-case scenarion in this means assuming that all \gls{ut}s transmit synchronous pilot sequences of length $\tau$ symbols at the beginning of every coherence interval. Every cell then transmits a $\tau \times K$ orthogonal matrix $\textbf{S}_j = (\textbf{s}_{j1},\dots,\textbf{s}_{jk})$ which satisfies $\textbf{S}_j^T\textbf{S}_j = \tau \textbf{I}$. The received signal matrix at the $l_{th}$ \gls{bs} is then:
 \begin{equation}
 \textbf{Y}_l = \sqrt{p_u}\sum_{j=1}^{L}\textbf{D}_{l,j}^{1/2}\textbf{H}_{l,j}\textbf{S}_j^T + \textbf{N}_l
@@ -211,8 +216,13 @@ In this context the author analiyses the transmission scenario where he consider
   \item Single antennas terminals;
   \item \gls{tdd}.
 \end{itemize}
-In this context, the maximum number of terminals for which the \gls{bs} can learn the channel is limited by the time it takes to acquire the \gls{csi} from the moving terminals, specifically: $K_{max} = \tau N_{smooth}$ with $\tau$ the number of OFDM symbols and $N_{smooth}$ the time over which the channel response is constant. The implication is that in general pilots from different cells are non-orthogonal, unless, for $K$ pilots in the $l_{th}$ cell, $K\cdot L \leq \tau N_{smooth}$ is true. The main conclusion of this apporach is that the frequency reuse among cells makes this relation false, and so justifies the inter-cell interference as the main source of pilot contamination \cite{Marzetta2010}.
+Here the maximum number of terminals for which the \gls{bs} can learn the channel is limited by the time it takes to acquire the \gls{csi} from the moving terminals, specifically: $K_{max} = \tau N_{smooth}$ with $\tau$ the number of OFDM symbols and $N_{smooth}$ the time over which the channel response is constant. The implication is that in general pilots from different cells are non-orthogonal, unless, for $K$ pilots in the $l_{th}$ cell, $K\cdot L \leq \tau N_{smooth}$ is true. The main conclusion of this apporach is that the frequency reuse among cells makes this relation false, and so justifies the inter-cell interference as the main source of pilot contamination \cite{Marzetta2010}.
 \subsection{Hardware impairments}
+Some works studied the impairments that some hardware components in radio frequency chain are prone to; these impairments can affect the accuracy of the \gls{ce} with related pilot contamination. These works approached this contamination source modeling some sort of non-ideal behavior of each component, but with more attention to the system overall response. In general, one main study \cri{Vedi se inserire la fonte} shows how the hardware impairments from the \gls{bs} are negligible, while the main component of it comes from the \gls{ut}s, which limit the capacity in massive \gls{mimo} systems af M grows large. In this scenario, the \gls{ul} non-ideal system model that takes into consideration the distorsion noise for the received signal $\textbf{y} \in \mathbb{C}$ at the \gls{bs}, considering the deterministic pilot signal $d \in \mathbb{C}$, is represented by:
+\begin{equation}
+  \textbf{y} = \textbf{g}(d + {\eta}_t^{UT}) + \mathbf{\eta}_r^{BS} + \textbf{v}
+\end{equation}
+Where the stochastic processes $\eta_t^{UT} \in \mathbb{C}$ and $\mathbf{\eta}_r^{BS} \in \mathbb{C}^{M\times 1}$ describe the impairments of the transmitter and the receiver hardware at the \gls{ut} and the \gls{bs} respectively. While the ergodic process which is the additive noise $\textbf{v} = \textbf{v}_{noise} + \textbf{v}_{interf} \in \mathbb{C}^{M\times 1}$ consists of independent receiver noise $\textbf{v}_{noise} \sim \mathcal{CN}(\textbf{0},\sigma_{BS}^2\textbf{I})$ and potential interference from other simultaneous transmissions.
 
 \cri{cita paper del prof}
 \section{Pilot reuse approach details}
