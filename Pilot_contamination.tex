@@ -1,4 +1,4 @@
-\documentclass[11pt]{book}
+ \documentclass[11pt]{book}
 
 % \usepackage{amssymb}
 % \documentclass[12pt,a4paper]{article}
@@ -15,6 +15,7 @@
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\argmin}{\arg\!\min} % AlfC
+\newcommand{\argmax}{\arg\!\max} % AlfC
 \DeclareMathOperator{\tr}{tr}
 \newcommand{\irchi}[2]{\raisebox{\depth}{$#1\chi$}}
 \newcommand{\rchi}{{\mathpalette\irchi\relax}}
@@ -126,6 +127,12 @@
 \newacronym{ce}{CE}{Channel Estimation}
 \newacronym{ul}{UL}{Uplink}
 \newacronym{sinr}{SINR}{Signal-to-Interference plus Noise Ratio}
+\newacronym{sir}{SIR}{Signal-to-Interference Ratio}
+\newacronym{evd}{EVD}{Eigenvalue Decomposition}
+\newacronym{map}{MAP}{Maximum a-posteriori}
+\newacronym{cdma}{CDMA}{Code Division Multiple Access}
+\newacronym{snr}{SNR}{Signal to Noise Ratio}
+\newacronym{svd}{SVD}{Singular Value Decomposition}
 
 \makeatletter
 \newcommand{\chapterauthor}[1]{%
@@ -158,7 +165,7 @@ For this reason \gls{tdd} is considered a more suitable approach the \gls{fdd} w
 
 In \gls{tdd} the time pilots require is proportional to the number of terminals served, while the number of base station antennas does not influence it. At the same time, though, the number of terminals that can be served is limited by the coherence time. One of the principal findings in this sense is that the addition of \gls{bs} antennas always brings benefits to the SNR situation.
 
-To simplify the observed scenario, several works focus on multi-user \gls{mimo} operations with an infinite number of base station antennas in a multicellular environment. In general, in a massive \gls{mimo} system, when the \gls{ut}s transmit their pilot sequences to the \gls{bs} in order to perform the channel estimation in the \gls{ul} training phase, every \gls{bs} not only learns the channel related to the intended \gls{ut}, but also fractions of the channels connected to other \gls{ut}s that happen to have pilots which are related to the ones used by the intended \gls{ut}. This behavior causes a saturation in the achieved \gls{sinr} both in the uplink and in the downlink segment \cite{Buzzi}.
+To simplify the observed scenario, several works focus on multi-user \gls{mimo} operations with an infinite number of base station antennas in a multicellular environment. In general, in a massive \gls{mimo} system, when the \gls{ut}s transmit their pilot sequences to the \gls{bs} in order to perform the channel estimation in the \gls{ul} training phase, every \gls{bs} not only learns the channel related to the intended \gls{ut}, but also fractions of the channels connected to other \gls{ut}s that happen to have pilots which are related to the ones used by the intended \gls{ut}.
 
 % In this frame, orthogonal pilots would need length of at least $K \times L$ symbols (with $K = $ overall number of \gls{ut}s in a cell and $L = $ total number of cells in a system) due to frequency reuse factor of one, so non-orthogonal pilots across neighboring cells are used. At the same time, the use of $K \times L$ pilots is not feasible beacuse of short channel coherence times due to \gls{ut}s mobility \cite{Elijah2016}. Because of it, the problem of pilot contamination arises and it has been considered one of the main impirments in massive \gls{mimo} systems.
 
@@ -193,8 +200,6 @@ with:
   \end{equation}
   with $h_{l,k,j,m}$ being the small scale fading factor whose variables are $\mathcal{CN}(0,1)$.\\
 \end{itemize}
-
-\cri{Cita paper marzetta e paper prof per i diversi tipi di contaminazione}
 \section{The connection with 5G protocol}
 \cri{Cita paper 5th e paper del prof}
 \section{The main sources of contamination}
@@ -218,24 +223,72 @@ In this context the author analiyses the transmission scenario where he consider
 \end{itemize}
 Here the maximum number of terminals for which the \gls{bs} can learn the channel is limited by the time it takes to acquire the \gls{csi} from the moving terminals, specifically: $K_{max} = \tau N_{smooth}$ with $\tau$ the number of OFDM symbols and $N_{smooth}$ the time over which the channel response is constant. The implication is that in general pilots from different cells are non-orthogonal, unless, for $K$ pilots in the $l_{th}$ cell, $K\cdot L \leq \tau N_{smooth}$ is true. The main conclusion of this apporach is that the frequency reuse among cells makes this relation false, and so justifies the inter-cell interference as the main source of pilot contamination \cite{Marzetta2010}.
 \subsection{Hardware impairments}
-Some works studied the impairments that some hardware components in radio frequency chain are prone to; these impairments can affect the accuracy of the \gls{ce} with related pilot contamination. These works approached this contamination source modeling some sort of non-ideal behavior of each component, but with more attention to the system overall response. In general, one main study \cri{Vedi se inserire la fonte} shows how the hardware impairments from the \gls{bs} are negligible, while the main component of it comes from the \gls{ut}s, which limit the capacity in massive \gls{mimo} systems af M grows large. In this scenario, the \gls{ul} non-ideal system model that takes into consideration the distorsion noise for the received signal $\textbf{y} \in \mathbb{C}$ at the \gls{bs}, considering the deterministic pilot signal $d \in \mathbb{C}$, is represented by:
+Some works studied the impairments that some hardware components in radio frequency chain are prone to; these impairments can affect the accuracy of the \gls{ce} with related pilot contamination. These works approached this contamination source modeling some sort of non-ideal behavior of each component, but with more attention to the system overall response. In general, one main study \cite{Bjornson2014} shows how the hardware impairments from the \gls{bs} are negligible, while the main component of it comes from the \gls{ut}s, which limit the capacity in massive \gls{mimo} systems af M grows large. In this scenario, the \gls{ul} non-ideal system model that takes into consideration the distorsion noise for the received signal $\textbf{y} \in \mathbb{C}$ at the \gls{bs}, considering the deterministic pilot signal $d \in \mathbb{C}$, is represented by:
 \begin{equation}
   \textbf{y} = \textbf{g}(d + {\eta}_t^{UT}) + \mathbf{\eta}_r^{BS} + \textbf{v}
 \end{equation}
 Where the stochastic processes $\eta_t^{UT} \in \mathbb{C}$ and $\mathbf{\eta}_r^{BS} \in \mathbb{C}^{M\times 1}$ describe the impairments of the transmitter and the receiver hardware at the \gls{ut} and the \gls{bs} respectively. While the ergodic process which is the additive noise $\textbf{v} = \textbf{v}_{noise} + \textbf{v}_{interf} \in \mathbb{C}^{M\times 1}$ consists of independent receiver noise $\textbf{v}_{noise} \sim \mathcal{CN}(\textbf{0},\sigma_{BS}^2\textbf{I})$ and potential interference from other simultaneous transmissions.
 
-\cri{cita paper del prof}
-\section{Pilot reuse approach details}
-\cri{non ricordo paper}
-\section{Subspace estimation approach details}
-\cri{cita paper muller}
+\subsection{Effects of pilot contamination}
+The effects that can be counted can be analyzed first by the formulation of \gls{sir} expressions that can subsequently be translated into achievable rates; As much as \gls{sinr} can be considered, which has been demonstrated to saturate as M tends to infinity both in the uplink and in the downlink segment \cite{Elijah2016} \cite{Buzzi}. At the same time system performance degrades visibly because pilot contamination when the inter-cell interference factor $\beta$, composed by shadow fading and path loss, increases \cite{Elijah2016}.
+\section{Schemes for pilot contamination mitigation}
+There are several existing methods which intend to eliminate or mitigate the effects of pilot contamination, in particular for the case of \gls{tdd} systems. The two main categories these solutions have been divided in are, namely, the pilot-based estimation approach and the subspace estimation approach. Below we will give a brief explanation of what the former method consists of, while we will present one solution for the latter.
+
+\subsection{The pilot-based approach}
+In this approach,the main idea is that non-orthogonal pilots are used across the cells, while orthogonal ones within the cell. Through this assumption it was possible, for example, to transmit pilot signals from different cells by shifting the pilot location in frames so that users in separate cells transmit Without overlapping in time. Another point of view is using precoding methods requiring a limited collaboration among the \gls{bs}s \cite{Elijah2016}.
+\subsection{The subspace-based approach}
+The strength of this approach is that it requires a very limited number of pilot symbols for operation. In these, \gls{csi} is obtained through the application of \gls{evd} on the covariance matrix of the received samples. Moreover, since is not true a priori that the desired channels are always stronger than the interfering channels, \gls{map} criteria were added to it in some solutions.
+
+The solution we briefly consider here was elaborated by M\"uller \textit{et al.} in \cite{Ralf} and consists of a nonlinear channel estimation based on a subspace projection. One of the most important statements of the paper is the confutation of the conclusion drawn by Marzetta \textit{et al.} in \cite{Marzetta2010}, where they stated that the array gain cannot be achieved for channel estimation, but only for data detection. Disproving this, \cite{Ralf} uses this gain for the nonlinear channel estimation algorithm, as well as shows how pilot contamination is a consequence of linear channel estimation and not a fundamental effect that cannot be removed.
+
+\subsubsection{System model}
+The owrk considers a wireless communication channel in the \gls{ul}, with the channel bandwith smaller than the coherence bandwidth and the channel being frequency-flat, block-fading and narrowband. Let the number of trasmit antennas be T and the number of receiving antennas R $>$ T. In this context, we can elaborate the \gls{cdma} system:
+\begin{equation}
+  \mathbf{Y} = \mathbf{HX} + \mathbf{Z},
+\end{equation}
+where:
+\begin{itemize}
+  \item $\mathbf{X} \in \mathbb{C}^{T\times C}$ the transmitted data;
+  \item $\mathbf{Y} \in \mathbb{C}^{R\times C}$ the received signal;
+  \item $\mathbf{Z} \in \mathbb{C}^{R\times C}$ the additive noise;
+  \item $\mathbf{H} \in \mathbb{C}^{R\times T}$ the channel matrix, whose columns denote the spreading sequences;
+\end{itemize}
+and we can deploy the well-know fact that there is no need to know the spreading sequences to demodulate the \gls{cdma}, to come up with a so-called blind approach described below.
+\subsubsection{The proposed method}
+The proposed algorithm states that it might be a good idea not to estimate the channel matrix $\mathbf{H}$, but directly consider the subspace channel:
+\begin{equation}
+  \mathbf{\tilde{Y}} = \mathbf{\tilde{H}X} + \mathbf{\tilde{Z}}
+\end{equation}
+and estimate the much smaller subspace channel matrix $\mathbf{\tilde{H}} \in \mathbb{C}^{t\times T}$.
+
+This because only the largest eigenvalues of $\mathbf{Y}\mathbf{Y}^T$ are necessary to our purpose. In fact, considering the case of $T = 1$ active transmit antenna and looking for the matched filter $m^T$ such that the \gls{snr} at its output is maximum, we are indeed looking for maximizing the total received power normalized to the power gain of the filter. Mathematically:
+\begin{equation}
+  \mathbf{m} = \argmax_{\mathbf{m}}\frac{\mathbf{m}^T\mathbf{Y}\mathbf{Y}^T\mathbf{m}}{\mathbf{m}^T\mathbf{m}}
+\end{equation}
+And in such case, the maximum value is exactly given by the maximum eigenvalue of $\mathbf{Y}\mathbf{Y}^T$, for a result from the algebra.
+
+If we now extend this idea to the case of multiple transmit antennas, we can see that the subspace of eigenvalues we need is given by the projection of the received signal onto the signal space basis $\mathbf{S}^T \in \mathbb{C}^{T\times R}$ which stands out by the matrix of left singular vectors obtained by \gls{svd} of $\mathbf{Y}$. To express it in a more formal way we have:
+\begin{equation}
+  \mathbf{Y} = \mathbf{U} \mathbf{\Sigma} \mathbf{V}^T
+\end{equation}
+with unitary matrices $\mathbf{U} \in \mathbb{C}^{R\times R}$ and $\mathbf{V} \in \mathbb{C}^{C\times C}$, and the diagonal matrix $\mathbf{\Sigma} \in \mathbb{C}^{R\times C}$ \cri{è corretto l'insieme di appartenenza di questi elementi?} with diagonal entries sorted in non-increasing order. Based on this the $\mathbf{U}$ matrix has the structure:
+\begin{equation}
+  \mathbf{U} = [\mathbf{S|\mathbf{N}}]
+\end{equation}
+with the null space basis being $\mathbf{N} \in \mathbb{C}^{R\times (R-T)}$.
+
+The projection in question is thus expressed as:
+\begin{equation}
+  \mathbf{\tilde{Y}} = \mathbf{S}^T\mathbf{Y}
+\end{equation}
+In this scenario, a remark on the white noise can be done and precisely that if then we consider the case of massive \gls{mimo} scenario, where $R >> T$, then we see that the influence of it onto the signal subspace becomes negligible as $R \rightarrow \inf$. This because white noise is evenly distributed in all dimensions of the full space, which in turn is much bigger than the T-dimensional signal subspace.
+
+What is left then is the co-channel interference from L neighboring cells, which typically is not white and jusitfies the relation for which the more colored the smaller the \textit{load} factor:
+\begin{equation}
+  \alpha = \frac{T}{R}
+\end{equation}
+Were we able to identify which singular values correspond to channel vectors from inside the cell, as opposed to the ones from neighboring cells, we could try to remove them by subspace projection. Moreover, we keep also in mind that any R-dimensional channel vector from any transmitter to the receive array in the interested cell is orthogonal to any other channel vector. Thus we can conclude that, in a cellular system with power-controlled handoff strategy, the norm of channel vectors from neighboring cells can never be bigger than the norm of interested-cell channel vectors; this means that we can identify the singular values belonging to transmitters internal to the cell by ordering them by magnitude \cite{Ralf}.
 \section{Conclusions}
-
-
-Example of use of bibliography  \cite{Marzetta2010}
-
-
-
 \bibliographystyle{ieeetr}
 \bibliography{myBib}
 
