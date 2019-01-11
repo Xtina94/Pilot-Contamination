@@ -288,6 +288,57 @@ What is left then is the co-channel interference from L neighboring cells, which
   \alpha = \frac{T}{R}
 \end{equation}
 Were we able to identify which singular values correspond to channel vectors from inside the cell, as opposed to the ones from neighboring cells, we could try to remove them by subspace projection. Moreover, we keep also in mind that any R-dimensional channel vector from any transmitter to the receive array in the interested cell is orthogonal to any other channel vector. Thus we can conclude that, in a cellular system with power-controlled handoff strategy, the norm of channel vectors from neighboring cells can never be bigger than the norm of interested-cell channel vectors; this means that we can identify the singular values belonging to transmitters internal to the cell by ordering them by magnitude \cite{Ralf}.
+\subsubsection{Performance ananlysis}
+In this section we will give an approximate estimation of the number of transmit antennas which is suitable for for the previous approach. \cri{rivedi questa cosa se poi non riesci a tirare fuori un valore per il numero di antenne}
+
+In the frame of classical massive \gls{mimo} settings, with L finite, R,T $\rightarrow \inf$ and $0 \neq \alpha \ll 1$, the impairment process $\mathbf{Z}$ is composed by a white noise component $\mathbf{W}$ (having iid elements with zero mean and variance W) and the interference from L neighboring cells:
+\begin{equation}
+  \mathbf{Z} = \mathbf{W} + \mathbf{H}_I\mathbf{X}_I
+\end{equation}
+In our helps comes also the definition of the normalized coherence time:
+\begin{equation}
+  \kappa = \frac{C}{R}
+\end{equation}
+In the large antenna limit $R \rightarrow \inf$, if we consider that the singular values of the normalized noise $\frac{\mathbf{W}}{\sqrt{CW}}/$ are bounded by the interval
+\begin{equation}
+  \frac{1}{\sqrt{\kappa}} - 1 < x < \frac{1}{\sqrt{\kappa}} + 1
+\end{equation}
+we can say that, at most, the power of white noise being present in $\mathbf{\tilde{Y}}$ is:
+\begin{equation}
+  Noise_w = \left(\Big(\frac{\mathbf{W}}{\sqrt{CW}}\Big)\sqrt{CW}\right)^2 = CW\left(1+\frac{1}{\sqrt{\kappa}}\right)^2
+\end{equation}
+for one singular value, while it is
+\begin{equation}
+  TNoise_w
+\end{equation}
+in the worst case, where the T largest singular values of the noise affect the signal of interest.
+
+To then calculate the \gls{snr} in $\mathbf{\tilde{Y}}$ we can give an espression for the total power of the received signal as $TRCP$, since the data signal $\mathbf{X}$ is iid zero mean with variance (which account for its power) $P$. The \gls{snr} can be thus lower bounded by:
+\begin{equation}
+  SNR \geq \frac{P}{W}\frac{R}{\left(1+ \frac{1}{\sqrt{\kappa}}\right)^2}
+\end{equation}
+
+
+As mentioned at the beginning of this section, there is also the co-channel interference from neighboring cells, which is not white but at the same time higly concentrated in certain subspaces and can be suppressed making use of the phase transition of spectra of large random matrices. Specifically, in \cite{Ralf2012} the authors show how, in a multiuser \gls{mimo} scenario, the eigenvalue distribution of $\mathbf{H}$, when properly scaled or shifted, separates into two separate non-overlapping bulks with each bulk being shaped very similar to the cases of pure scattering and pure line-of-sight. This comes to our help when trying to separate the co-channel interference (the equivalent of the pure scattering) from the normalized signal of interest $\frac{\mathbf{HX}}{\sqrt{TR}}$ (the equivalent of pure line-of-sight).
+
+For this we start observing that in the appendix A of \cite{Ralf}, the signal of interest is shown to converge to:
+\begin{equation}
+  \mathcal{P} = \left[\frac{\kappa P}{\alpha}-2P\sqrt{\frac{\kappa^2 + \kappa}{\alpha}};\frac{\kappa P}{\alpha} + 2P\sqrt{\frac{\kappa^2 + \kappa}{\alpha}}\right]
+\end{equation}
+as $R \rightarrow \inf$ and for $\alpha \ll 1$.
+
+We then proceed supposing the entries of the matrix of interfering signals $\mathbf{X}_I$ be iid with zero mean and variance $P$, while the entries of the matrix of interfering channels $\mathbf{H}_I$ be iid with zero mean and variance $I/P$. In this way the ratio accounts for the relative attenuation between the intercell users and users external to the cell and thus the empirical distribution of the squared singular values of the normalized co-channel interference ($\frac{\mathbf{H}_I\mathbf{X}_I}{\sqrt{TR}}$) converges to a limit distribution as well. This distribution, for $\alpha \ll 1$ is supported in the interval
+\begin{equation}
+  \mathcal{I} =  \left[\frac{\kappa I}{\alpha}-2I\sqrt{L\frac{\kappa^2 + \kappa}{\alpha}};\frac{\kappa I}{\alpha} + 2I\sqrt{L\frac{\kappa^2 + \kappa}{\alpha}}\right]
+\end{equation}
+Therefore, having obtained two intervals (and so relative upper bounds) on the signal received and the co-channel interference, we can make us of the statement in \cite{Ralf2012} to affirm that if these two intervals do not overlap, i.e.
+\begin{equation}
+  \mathcal{P}\cap \mathcal{I} = 0
+\end{equation}
+or better
+\begin{equation}
+  \frac{P}{I} > \frac{1+2\sqrt{\alphaL(1+\frac{1}{\kappa})}}{1-2\sqrt{\alpha(1+\frac{1}{\kappa})}} \approx{\alpha \ll 1} 1+2(1+\sqrt{L})\sqrt{\alpha\left(1+\frac{1}{\kappa}\right)}
+\end{equation}
 \section{Conclusions}
 \bibliographystyle{ieeetr}
 \bibliography{myBib}
