@@ -6,10 +6,10 @@
 % \usepackage[a4paper]{geometry}
 % \usepackage[utf8]{inputenc}
 % \usepackage[T1]{fontenc}
-% \usepackage[light]{CormorantGaramond}
+\usepackage[light]{CormorantGaramond}
 % \usepackage{import}
 %
-% \linespread{1.25}
+\linespread{1.1}
 
 \usepackage{amsmath, amssymb, amsfonts, amsthm, mathtools}
 \newcommand{\R}{\mathbb{R}}
@@ -365,7 +365,75 @@ The results of M\"uller \textit{et al.} in \cite{Ralf} are obtained through the 
   \label{fig:BER}
   \caption{\footnotesize{BER for $R = 200$ receive antennas, $T = 2$ transmit antennas, $L = 2$ neighboring cells, coherence time of $C = 400$ symbols, and signal-to-noise ratio $P/W = 0.1$. The solid and dashed lines refer to 1 and 10 pilot symbols per transmit antenna and cell, respectively.}}
 \end{SCfigure}
-\section{Conclusions}
+
+\section{Pilot contamination and mmWaves}
+As the last thing we tackle, a quite recent work from Naqvi \textit{et al.} focuses on the problem of pilot contamination in the mmWaves scenario \cite{Ahsan2016}.
+\subsection{The scenario}
+The authors use an hexagonal geometry with random deployment of users, studying a conventional frequency reuse and deriving the network throughput. The geometry and reuse model are well represented in \autoref{fig:geometry}, where each color represents a set of orthogonal pilots, which are in turn mutually orthogonal from color to color. The total number of cell in our case is $L$, the reuse factor of each cell is given by the parameter $Q = \{1,3,4,7,\dots\}$ and each cell contains an $M$-antenna \gls{bs} that serves K randomly deployed single antenna mobiles.
+\begin{figure}
+\centering
+  \includegraphics[width = .7\textwidth]{geometry.png}
+  \caption{Pilot reuse under consideration}
+  \label{fig:geometry}
+\end{figure}
+\subsection{Multicell \gls{ul} communication}
+All the users in this scenario communicate with their respective \gls{bs} in two stages: the \gls{ul} training with pilot reuse and the actual transmission of data stage.
+
+In the first stage orthogonal pilots are assigned to the users in each cell, and deploy the reuse factor $Q$. Specifically, assume a pre-designed pilot sequence matrix in the form:
+\begin{equation}
+  \mathbf{\Psi} = [\psi_0,\psi_1,\dots,\psi_{Q-1}] \quad \in \mathbb{C}^{QK\times QK}
+\end{equation}
+with $\mathbf{\Psi}$ being divided among the cells and the $i^{th}$ element of it is assigned to the $i^{th}$ serving cell, so that the pilot sequence is further reused by cell $lQ$, with $1 \leq |l| \leq \lfloor\frac{l}{Q}\rfloor$.
+
+If we now take the case of cell $0$, for brevity, in a single-time frequency block, then the signals received at \gls{bs} $0$ are in the form:
+\begin{equation}
+  \mathbf{P}_0 = \sqrt{\phi_{\tau} QK}\sum_{j=0}^{L-1}\mathbf{H}_{0,j}\mathbf{\Psi}_{(j)}^* + \mathbf{W}_0 \quad \in \mathbb{C}^{M\times K}
+\end{equation}
+with, again, $H_{0,j}$ being the channel matrix between the mobiles of cell $j$ and \gls{bs} $0$, $\mathbf{W}_0$ being the iid $\mathcal{CN}(0,1)$ and $\phi_{\tau}$ being the average transmission power per mobile. We specify also that the factor $\sqrt{QK}$ guarantees that the average power is indeed $\phi_{\tau}$.
+
+Next, the received signal is projected onto $\Psi_{0,k}$ in order to estimate the elements of $H_{0,j}$ at the \gls{bs} $0$.
+
+The subsequent actual transmission of data works in a similar way and the expressions obtained in \cite{Ahsan2016} well distinguish the intra-dell and the inter-cell interfernce.
+
+Finally, the reader can look at section $C$ in \cite{Ahsan2016} for the mathematical derivation of the achievable cell throughput.
+
+\subsection{Results}
+\begin{figure}
+\begin{minipage}{.47\textwidth}
+\centering
+  \includegraphics[width = \textwidth]{uhf.png}
+  \caption{\footnotesize{Interference components in UHF systems using $Q = 1$ and $7$}}
+  \label{fig:uhf}
+\end{minipage}
+\vspace{20mm}
+\begin{minipage}{.47\textwidth}
+\centering
+  \includegraphics[width = \textwidth]{mm.png}
+  \caption{\footnotesize{Interference components in mmWave systems using $Q = 1$ and $7$}}
+  \label{fig:mm}
+\end{minipage}
+\end{figure}
+
+We highlight here some of the most important results that come up from the work in \cite{Ahsan2016}. In the first chart in \autoref{fig:uhf} we can see the interference power for the UHF link for 5, 10, 15 and 20 users per cell, and $M = 100$ antennas. We put the focus on some main aspects:
+\begin{itemize}
+  \item the inter-cellular and the intra-cellular interferences
+  increase steadily with an increase in the number of users for
+  either value of $Q$. In this, since the user location is random, both the interferences have the same impact on the throughput: for closer points to the \gls{bs} the intra-cell interference dominates, while it is the contrary for long distances;
+  \item the pilot contamination has separate fixed values for the
+  two reuse factors that are independent of the total number of users. In this particular case, because of the hexagonal geometry the number of interferers causing pilot contamination will always be six for any reuse factor;
+  \item what is most interesting, though, is the counterintuitive aknowledgment of the pilot reuse potency, as pilot contamination falls from approximately 0dBm for $Q=1$,to -40dBm for $Q=7$. This because a greater value of the pilot reuse factor, means a greater the distance of the interferer from the BS, and so, a greater path loss experienced by
+  the interfering signal and, which means lesser pilot contamination.
+\end{itemize}
+In the second chart interference power for mmWave frequencies is examined. Here we see that:
+\begin{itemize}
+  \item there is a correspondence in inter-cellular
+and intra-cellular interferences to the behavior seen in UHF systems;
+  \item however, in this case the inter-cellular interference for both pilot reuse factors is much smaller than the one in the previous graph. These results allude to the advantage afforded by the mmWave link’s increased path loss, which drowns out the interference from the neighboring cells to the extent that a higher pilot
+  reuse factor has no further impact on pilot contamination.
+\end{itemize}
+
+Summarizing what seen here so far, it can be stated that the mmWave link outperforms the UHF link to the point that at such high bandwidht mmWave links need not incorporate pilot reuse into the network, since the network gives virtually similar results for all the values of $K$ used, both for $Q = 1$ and $Q=3$.
+
 \bibliographystyle{ieeetr}
 \bibliography{myBib}
 
