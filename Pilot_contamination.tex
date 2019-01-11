@@ -16,6 +16,7 @@
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\argmin}{\arg\!\min} % AlfC
 \newcommand{\argmax}{\arg\!\max} % AlfC
+\newcommand{\myeq}{\mathrel{\stackrel{\mbox{\normalfont\tiny{$\alpha \ll 1$}}}{\approx}}}
 \DeclareMathOperator{\tr}{tr}
 \newcommand{\irchi}[2]{\raisebox{\depth}{$#1\chi$}}
 \newcommand{\rchi}{{\mathpalette\irchi\relax}}
@@ -75,6 +76,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{sidecap}
+\sidecaptionvpos{figure}{c}
 %%%%%%%%%%%%%%%%%%%%%%%%
 \graphicspath{{./figures/}} %Setting the graphicspath
 % \graphicspath{{./figures/G&D/}} %Setting the graphicspath
@@ -133,6 +136,8 @@
 \newacronym{cdma}{CDMA}{Code Division Multiple Access}
 \newacronym{snr}{SNR}{Signal to Noise Ratio}
 \newacronym{svd}{SVD}{Singular Value Decomposition}
+\newacronym{ber}{BER}{Bit Error Rate}
+\newacronym{qpsk}{QPSK}{Quaternary Phase Shift Keying}
 
 \makeatletter
 \newcommand{\chapterauthor}[1]{%
@@ -152,9 +157,9 @@ Student ID 1155449}
 \section{Overview}
 Compared to existing cellular network infrastructures, nowadays there is an increasing need for technologies providing higher capacity. This comes from an always bigger demand for higher data rates in wireless mobile communication systems such as \gls{iot}, \gls{m2m} communication and other electronic services.
 
-The current 4G cellular networks, \gls{3gpp} above all, were designed with the intention to support a peak spectral efficiency of $15$ bps/Hz, a bandwidth of $100$ MHz and an ultra-low latency \cite{Elijah2016}. Nonetheless, the estimated future traffic far exceeds the resources of the current 4G and so the need for 5G cellular networks.
+The current 4G cellular networks, \gls{3gpp} above all, were designed with the intention to support a peak spectral efficiency of $15$ bps/Hz, a bandwidth of $100$ MHz and an ultra-low latency. Nonetheless, the estimated future traffic far exceeds the resources of the current 4G and so the need for 5G cellular networks.
 
-One of the novelties of the 5G protocol which is beeing designed and refined in the present communication scenario is the \gls{mimo} system, a technology that focuses on the idea of implementing multiple antennas terminals in one device - or \gls{bs} - in order to enhance the quality and reliabilty of communication. Without going into details, one of the options for this system is the multiuser \gls{mimo} system, where and array of antennas serves a group of autonomous terminals at the same time. These terminals may be single-antenna cheap devices and the multiplexing throughput gains are shared among the \gls{ut}s \cite{Marzetta2010}.
+One of the novelties of the 5G protocol which is beeing designed and refined in the present communication scenario is the \gls{mimo} system, a technology that focuses on the idea of implementing multiple antennas terminals in one device - or \gls{bs} - in order to enhance the quality and reliabilty of communication. Without going into details, one of the options for this system is the multiuser \gls{mimo} system, where and array of antennas serves a group of autonomous terminals at the same time. These terminals may be single-antenna cheap devices and the multiplexing throughput gains are shared among the \gls{ut}s \cite{Marzetta2010} \cite{Elijah2016}.
 
 In this type of system, the \gls{csi} has a crucial role, since forward-link data transmission needs that the base station know the forward channel, as well as the reverse-link data transmission require it to know the reverse channel. This is the reason why such things as pilot signals exist, but with them some problems might arise due to the contamination of such signals. What we mean to takle in this chapter is exactly to have a detailed look at those kind of problems, referred to as pilot contamination, and at a couple of main approaches to solve them.
 
@@ -331,14 +336,35 @@ We then proceed supposing the entries of the matrix of interfering signals $\mat
 \begin{equation}
   \mathcal{I} =  \left[\frac{\kappa I}{\alpha}-2I\sqrt{L\frac{\kappa^2 + \kappa}{\alpha}};\frac{\kappa I}{\alpha} + 2I\sqrt{L\frac{\kappa^2 + \kappa}{\alpha}}\right]
 \end{equation}
-Therefore, having obtained two intervals (and so relative upper bounds) on the signal received and the co-channel interference, we can make us of the statement in \cite{Ralf2012} to affirm that if these two intervals do not overlap, i.e.
+Therefore, having obtained two intervals (and so relative upper bounds) on the signal received and the co-channel interference, we can make use of the statement in \cite{Ralf2012} to affirm that if these two intervals do not overlap, i.e.
 \begin{equation}
   \mathcal{P}\cap \mathcal{I} = 0
 \end{equation}
 or better
-\begin{equation}
-  \frac{P}{I} > \frac{1+2\sqrt{\alphaL(1+\frac{1}{\kappa})}}{1-2\sqrt{\alpha(1+\frac{1}{\kappa})}} \approx{\alpha \ll 1} 1+2(1+\sqrt{L})\sqrt{\alpha\left(1+\frac{1}{\kappa}\right)}
-\end{equation}
+\begin{align}
+  \frac{P}{I} &> \frac{1 + 2\sqrt{\alpha L \left( 1 + \frac{1}{\sqrt{\kappa}} \right)}}{1 - 2 \sqrt{\alpha \left( 1 + \frac{1}{\kappa} \right)}}\\
+  &\myeq 1 + 2 \left( 1 + \sqrt{L} \right)\sqrt{\alpha \left( 1 + \frac{1}{\kappa} \right)}
+  \label{eq:cochannel}
+\end{align}
+then, in the limit $\alpha \rightarrow 0$ the signal bulk can always be separated from the interference one as long as $\frac{P}{I} > 1$. Through this it can be stated that the two subspaces, the signal and the interference one, can be identified blindly and the interference can be nulled out \cite{Ralf}.
+\subsubsection{Results}
+The results of M\"uller \textit{et al.} in \cite{Ralf} are obtained through the application of Monte-Carlo simulation for the undecoded \gls{ber} under the hypothesis of \gls{qpsk} and flat Rayleigh fading. These results have then been compared with the ones obtained by Marzetta in \cite{Marzetta2010}. In \autoref{fig:SNR} the case of high SNR is considered and shows how the \gls{ber} drops drastically if the reciprocal of the rate given in \ref{eq:cochannel} is below the threshold provided by the random matrix method, confirming the possibility to overcome the pilot contamination problem.
+
+\autoref{fig:BER} represents the more relevant case, where the algorithm presented above achieves significant performance gains compared to the linear channel estimation. In the picture it is also underlined the maximum $I/P$ ratio over which the the singular values do not separate in the simulations.
+
+\begin{SCfigure}
+  \centering
+  \includegraphics[width = 0.7\textwidth]{SNRvsMarzetta.png}
+  \caption{\footnotesize{BER for 1 pilot symbol per transmit antenna and cell, $R = 400$
+  receive antennas, $T = 4$ transmit antennas, $L = 2$ neighboring cells, coherence time  of $C = 1000$ symbols, and signal-to-noise ratio $P/W = 100$.}}
+  \label{fig:SNR}
+\end{SCfigure}
+\begin{SCfigure}
+  \centering
+  \includegraphics[width = 0.7\textwidth]{BERvsMarzetta.png}
+  \label{fig:BER}
+  \caption{\footnotesize{BER for $R = 200$ receive antennas, $T = 2$ transmit antennas, $L = 2$ neighboring cells, coherence time of $C = 400$ symbols, and signal-to-noise ratio $P/W = 0.1$. The solid and dashed lines refer to 1 and 10 pilot symbols per transmit antenna and cell, respectively.}}
+\end{SCfigure}
 \section{Conclusions}
 \bibliographystyle{ieeetr}
 \bibliography{myBib}
