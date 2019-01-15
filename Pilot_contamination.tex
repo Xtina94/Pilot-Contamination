@@ -6,7 +6,7 @@
 % \usepackage[a4paper]{geometry}
 % \usepackage[utf8]{inputenc}
 % \usepackage[T1]{fontenc}
-\usepackage[light]{CormorantGaramond}
+% \usepackage[light]{CormorantGaramond}
 % \usepackage{import}
 %
 \linespread{1.1}
@@ -138,6 +138,12 @@
 \newacronym{svd}{SVD}{Singular Value Decomposition}
 \newacronym{ber}{BER}{Bit Error Rate}
 \newacronym{qpsk}{QPSK}{Quaternary Phase Shift Keying}
+\newacronym{4g}{4G}{Fourth Generation}
+\newacronym{srs}{SRS}{Sounding Reference Signal}
+\newacronym{ofdm}{OFDM}{Orthogonal Frequency Division Multiplexing}
+\newacronym{fr}{FR}{Fractional Reuse}
+\newacronym{frcc}{FR-CC}{Cell-centric Fractional Reuse}
+\newacronym{frna}{FR-NA}{Neighbour-aware Fractional Reuse}
 
 \makeatletter
 \newcommand{\chapterauthor}[1]{%
@@ -150,9 +156,11 @@
 
 
 \begin{document}
+% \tableofcontents
+
 \chapter{The Pilot Contamination problem}
 \chapterauthor{Author Name (Cristina Gava)\\
-Student ID 1155449}
+Student ID 1153449}
 
 \section{Overview}
 Compared to existing cellular network infrastructures, nowadays there is an increasing need for technologies providing higher capacity. This comes from an always bigger demand for higher data rates in wireless mobile communication systems such as \gls{iot}, \gls{m2m} communication and other electronic services.
@@ -205,8 +213,6 @@ with:
   \end{equation}
   with $h_{l,k,j,m}$ being the small scale fading factor whose variables are $\mathcal{CN}(0,1)$.\\
 \end{itemize}
-\section{The connection with 5G protocol}
-\cri{Cita paper 5th e paper del prof}
 \section{The main sources of contamination}
 Pilot conatmination can be related to two main causes: non-orthogonal pilot schemes and hardware impairments.
 While the first source is the most common and known one, the second source has been considered only recently and is still gaining consideration.
@@ -276,7 +282,7 @@ If we now extend this idea to the case of multiple transmit antennas, we can see
 \begin{equation}
   \mathbf{Y} = \mathbf{U} \mathbf{\Sigma} \mathbf{V}^T
 \end{equation}
-with unitary matrices $\mathbf{U} \in \mathbb{C}^{R\times R}$ and $\mathbf{V} \in \mathbb{C}^{C\times C}$, and the diagonal matrix $\mathbf{\Sigma} \in \mathbb{C}^{R\times C}$ \cri{è corretto l'insieme di appartenenza di questi elementi?} with diagonal entries sorted in non-increasing order. Based on this the $\mathbf{U}$ matrix has the structure:
+with unitary matrices $\mathbf{U} \in \mathbb{C}^{R\times R}$ and $\mathbf{V} \in \mathbb{C}^{C\times C}$, and the diagonal matrix $\mathbf{\Sigma} \in \mathbb{C}^{R\times C}$ \cri{verifica l'insieme di appartenenza degli elementi di questa matrice} with diagonal entries sorted in non-increasing order. Based on this the $\mathbf{U}$ matrix has the structure:
 \begin{equation}
   \mathbf{U} = [\mathbf{S|\mathbf{N}}]
 \end{equation}
@@ -294,7 +300,7 @@ What is left then is the co-channel interference from L neighboring cells, which
 \end{equation}
 Were we able to identify which singular values correspond to channel vectors from inside the cell, as opposed to the ones from neighboring cells, we could try to remove them by subspace projection. Moreover, we keep also in mind that any R-dimensional channel vector from any transmitter to the receive array in the interested cell is orthogonal to any other channel vector. Thus we can conclude that, in a cellular system with power-controlled handoff strategy, the norm of channel vectors from neighboring cells can never be bigger than the norm of interested-cell channel vectors; this means that we can identify the singular values belonging to transmitters internal to the cell by ordering them by magnitude \cite{Ralf}.
 \subsubsection{Performance ananlysis}
-In this section we will give an approximate estimation of the number of transmit antennas which is suitable for for the previous approach. \cri{rivedi questa cosa se poi non riesci a tirare fuori un valore per il numero di antenne}
+In this section we will give an approximate estimation of the number of transmit antennas which is suitable for for the previous approach.
 
 In the frame of classical massive \gls{mimo} settings, with L finite, R,T $\rightarrow \inf$ and $0 \neq \alpha \ll 1$, the impairment process $\mathbf{Z}$ is composed by a white noise component $\mathbf{W}$ (having iid elements with zero mean and variance W) and the interference from L neighboring cells:
 \begin{equation}
@@ -433,6 +439,33 @@ and intra-cellular interferences to the behavior seen in UHF systems;
 \end{itemize}
 
 Summarizing what seen here so far, it can be stated that the mmWave link outperforms the UHF link to the point that at such high bandwidht mmWave links need not incorporate pilot reuse into the network, since the network gives virtually similar results for all the values of $K$ used, both for $Q = 1$ and $Q=3$.
+
+\section{The pilot mitigation problem in the 5G 3GPP standard}
+The concepts seen so far are applied to the commercial standards of the latest wireless communication systems, starting from the \gls{4g} precursor, where \gls{csi} is acquired through pilots in a scheme called \gls{srs} and which is still considered the main candidate to carry \gls{ul} massive \gls{mimo} pilots in \gls{tdd} systems.
+
+However, as we previously mentioned, \gls{srs} reuse is the main cause of pilot contamination, therefore the approaches mentioned above are some of the possible solutions for it. In particular, the most recent adopted solutions try to optimize the pilot reuse schemes while keeping the training overhead under control. In \cite{Giordano}, Giordano \textit{et al.} focus on these schemes, evaluating their performance and highlighting the best one. In particular, they focus on \gls{ul} \gls{srs}s that span the entire bandwidth to allow a wideband channel sounding and consider a $2\times$ time repetition factor as well as 8 possible cyclic shifts of the \gls{ul} \gls{srs}, such that a maximum of 16 \gls{ul} \gls{srs} can be multiplexed in one \gls{ofdm} symbol. 5G standardisation is currently discussing whether amendments to this framework are needed to effectively support massive MIMO applications.
+
+\subsection{The \gls{srs} coordination - fixed reuse}
+The already well know pilot reuse schemes are named \textit{Reuse 1} and \textit{Reuse 3} and depending on them we can obtain two different upper bounds in the expression:
+\begin{equation}
+  N_{K,b} \leq \left\lfloor \frac{N_{I,\tau}}{3\beta_{PR}+\beta_{SH}} \right\rfloor
+\end{equation}
+representing the number $N_{K,b}$ of scheduled \gls{ut}s at the \gls{bs} $b$, considering a maximum of $N_{P,\tau}$ orthogonal \gls{srs}s and $\tau$ \gls{ofdm} symbols. Here, the parameter accounting for the reuse scheme type is $\beta_{PR} \in [0,1]$ and denotes the fraction of protected \gls{srs} sequences, which in turn are orthogonal among \gls{ut}s served by different \gls{bs}s. With this, $\beta_{SH} = 1 - \beta_{PR}$ is the remaining fraction of sequences that can be reused across the sectors of the same deployment site.
+
+In particular, in the \textit{Reuse 1} ($\beta_{PR} = 0$) scheme, all \gls{ut}s scheduled by all \gls{bs}s share the entire set of \gls{srs}s, but since orthogonality is only guaranteed among \gls{ut}s associated with the same \gls{bs}, pilots among \gls{ut}s connected to different \gls{bs}s are not orthogonal. The consequences of it are that the largest number of \gls{ut}s are multiplexed, but there is a more severe
+pilot contamination.
+
+With \textit{Reuse 3}, ($\beta_{PR} = 1$), three co-located \gls{bs} sectors within the same cell site use three different and orthogonal sets of \gls{srs}s, so that pilot orthogonality is preserved across the entire cell site. Thus this scheme leads to lower pilot contamination with respect to \textit{Reuse 1} scheme, even though this effect comes at the expense of training only one third of the UEs given a fixed $\tau$, or alternatively, using three times as many \gls{ofdm} symbols $\tau$ when considering a fixed number of scheduled \gls{ut}s per \gls{bs}.
+
+\subsection{The \gls{srs} coordination - fractional reuse}
+The tradeoff between the previous schemes is represented by the so-called \textit{\gls{fr}}, in which \textit{Reuse 3} is applied for a specific fraction of \gls{ut}s $\beta_{PR}$ and the \textit{Reuse 1} for the remaining fraction$\beta_{SH}$, with the result of being able to multiplex a larger number of
+sequences than \textit{Reuse 3} while providing less pilot contamination than \textit{Reuse 1}.
+
+The two main \gls{fr} reuse schemes are:
+\begin{itemize}
+  \item The \textbf{\gls{frcc}}
+  \item And the \textbf{\gls{frna}}
+\end{itemize}
 
 \bibliographystyle{ieeetr}
 \bibliography{myBib}
